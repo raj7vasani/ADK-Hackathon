@@ -1,0 +1,54 @@
+ADK-Hackathon/
+├── agents/
+│   ├── data_collection_agent/
+│   │   ├── agent.py            # Defines the Data Collection Agent (inherits from ADK agent)
+│   │   ├── tools.py            # Custom tools (e.g. API clients, scrapers)
+│   │   ├── requirements.txt    # Agent-specific Python deps
+│   │   └── Dockerfile          # Containerize this agent for Cloud Run
+│   ├── analysis_agent/
+│   │   ├── agent.py            # BigQuery orchestration logic
+│   │   ├── tools.py            # BigQuery query wrappers
+│   │   ├── requirements.txt
+│   │   └── Dockerfile
+│   └── visualization_agent/
+│       ├── agent.py            # Calls Looker/Data Studio APIs
+│       ├── tools.py            # Dashboard-generation helpers
+│       ├── requirements.txt
+│       └── Dockerfile
+│
+├── orchestrator/
+│   ├── orchestrator.py         # ADK “host” agent coordinating the three agents
+│   └── config.yaml             # Defines agent endpoints, timeouts, routing rules :contentReference[oaicite:1]{index=1}
+│
+├── connectors/
+│   ├── bigquery_connector.py   # Shared BigQuery client setup
+│   └── looker_connector.py     # Shared dashboard-API client
+│
+├── infra/
+│   ├── terraform/              # (optional) IaC modules for GCP resources
+│   │   └── main.tf
+│   └── cloud_run/              # YAML manifests for deploying each agent
+│       ├── data_collection.yaml
+│       ├── analysis.yaml
+│       └── visualization.yaml
+│
+├── configs/
+│   ├── .env                    # ENV vars (API keys, GCP project, region)
+│   └── agents.yaml             # High-level orchestration settings
+│
+├── notebooks/
+│   └── data_exploration.ipynb  # Scratchpad for prototyping BigQuery queries
+│
+├── scripts/
+│   ├── run_local.sh            # Spins up all agents locally (via Docker or venv)
+│   ├── deploy.sh               # Deploys infra + agents to GCP
+│   └── test_agents.sh          # Smoke tests against each `/run` endpoint
+│
+├── tests/
+│   ├── test_data_collection.py
+│   ├── test_analysis.py
+│   └── test_visualization.py
+│
+├── .gitignore
+├── README.md                   # Project overview & quickstart
+└── requirements.txt            # Root deps (e.g. google-adk, pyyaml, google-cloud-bigquery)
