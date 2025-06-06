@@ -1,0 +1,41 @@
+{
+  "tables": {
+    "mock_answers": {
+      "description": "Contains user-submitted answers to questions on the QA platform. Each answer is linked to a question and a user, and has a timestamp and textual content.",
+      "columns": {
+        "id": "Unique identifier for the answer (INT64)",
+        "question_id": "Foreign key to the associated question (INT64)",
+        "user_id": "Foreign key to the user who answered (INT64)",
+        "created_at": "Timestamp when the answer was submitted (TIMESTAMP)",
+        "content": "Text content of the user's answer (STRING)"
+      }
+    },
+    "mock_questions": {
+      "description": "Stores user-generated questions posted on the platform. Each question is associated with a user and includes a timestamp and content.",
+      "columns": {
+        "question_id": "Unique identifier for the question (INT64)",
+        "user_id": "ID of the user who posted the question (INT64)",
+        "created_at": "When the question was posted (TIMESTAMP)",
+        "content": "The text of the question (STRING)"
+      }
+    },
+    "mock_users": {
+      "description": "User profile information including personal identifiers and basic metadata such as name, email, and date of birth.",
+      "columns": {
+        "id": "Primary key for the user (INT64)",
+        "name": "User's display name (STRING)",
+        "email": "User's email address (STRING)",
+        "birthday": "User's birth date (DATE)"
+      }
+    },
+    "mock_user_sessions": {
+      "description": "Tracks user session activity such as session duration and date. Useful for engagement analysis and retention metrics.",
+      "columns": {
+        "session_id": "Unique identifier for a user session (STRING)",
+        "user_id": "ID of the user who had the session (INT64)",
+        "duration_min": "Length of the session in minutes (FLOAT64)",
+        "session_date": "Date on which the session occurred (DATE)"
+      }
+    }
+  }
+}
