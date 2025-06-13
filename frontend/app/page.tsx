@@ -24,16 +24,30 @@ export default function ChatPage() {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSend = (e?: React.FormEvent) => {
+  const handleSend = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!input.trim()) return;
-    setMessages((msgs) => [
-      ...msgs,
-      { role: "user", content: input.trim() },
-      // Placeholder for assistant response
-      { role: "assistant", content: "(Response will appear here...)" },
-    ]);
+    const userMessage = { role: "user", content: input.trim() };
+    setMessages((msgs) => [...msgs, userMessage]);
     setInput("");
+    try {
+      const res = await fetch("/api/table-retriever", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: input.trim() }),
+      });
+      if (!res.ok) throw new Error("Failed to fetch response");
+      const data = await res.json();
+      setMessages((msgs) => [
+        ...msgs,
+        { role: "assistant", content: data.enhanced_query || JSON.stringify(data) },
+      ]);
+    } catch (err: any) {
+      setMessages((msgs) => [
+        ...msgs,
+        { role: "assistant", content: `Error: ${err.message}` },
+      ]);
+    }
   };
 
   return (
