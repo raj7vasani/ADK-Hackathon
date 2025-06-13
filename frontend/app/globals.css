@@ -40,3 +40,19 @@ a {
     color-scheme: dark;
   }
 }
+
+body {
+  background: #18181b;
+  color: #f3f3f6;
+}
+
+button {
+  background: #007aff;
+  color: #fff;
+}
+
+input, textarea {
+  background: #23232a;
+  color: #f3f3f6;
+  border: 1px solid #333;
+}

@@ -51,94 +51,34 @@ export default function ChatPage() {
   };
 
   return (
-    <div style={{ display: "flex", height: "100vh", background: "#f7f7f8" }}>
+    <div className={styles.container}>
       {/* Sidebar */}
-      <aside
-        style={{
-          width: SIDEBAR_WIDTH,
-          background: "#fff",
-          borderRight: "1px solid #ececec",
-          display: "flex",
-          flexDirection: "column",
-          padding: "16px 0",
-        }}
-      >
-        <div style={{ padding: "0 24px", marginBottom: 24 }}>
-          <h2 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>Chats</h2>
+      <aside className={styles.sidebar}>
+        <div className={styles.sidebarHeader}>
+          <h2>Chats</h2>
         </div>
-        <nav style={{ flex: 1 }}>
+        <nav className={styles.sidebarNav}>
           {staticChats.map((chat) => (
-            <div
-              key={chat.id}
-              style={{
-                padding: "12px 24px",
-                cursor: "pointer",
-                borderRadius: 6,
-                margin: "0 8px 8px 8px",
-                background: "#f3f3f6",
-                fontWeight: 500,
-                color: "#222",
-              }}
-            >
+            <div key={chat.id} className={styles.sidebarChat}>
               {chat.title}
             </div>
           ))}
         </nav>
-        <div style={{ padding: "0 24px" }}>
-          <button
-            style={{
-              width: "100%",
-              padding: "10px 0",
-              borderRadius: 6,
-              border: "none",
-              background: "#ececf1",
-              color: "#444",
-              fontWeight: 600,
-              fontSize: 16,
-              cursor: "pointer",
-              marginTop: 8,
-            }}
-            disabled
-          >
+        <div className={styles.sidebarFooter}>
+          <button className={styles.sidebarButton} disabled>
             + New Chat
           </button>
         </div>
       </aside>
       {/* Main Chat Area */}
-      <main
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          height: "100vh",
-          maxWidth: "100vw",
-        }}
-      >
+      <main className={styles.main}>
         {/* Header */}
-        <header
-          style={{
-            padding: "24px 32px 12px 32px",
-            borderBottom: "1px solid #ececec",
-            background: "#fff",
-            display: "flex",
-            alignItems: "center",
-            gap: 16,
-          }}
-        >
-          <h1 style={{ fontSize: 24, fontWeight: 700, margin: 0, flex: 1 }}>
-            Product Manager Chat
-          </h1>
+        <header className={styles.header}>
+          <h1 className={styles.headerTitle}>Product Manager Chat</h1>
           <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
-            style={{
-              padding: "8px 12px",
-              borderRadius: 6,
-              border: "1px solid #ececec",
-              fontSize: 16,
-              background: "#f7f7f8",
-              color: "#222",
-            }}
+            className={styles.roleSelect}
             disabled
           >
             {roles.map((r) => (
@@ -149,32 +89,15 @@ export default function ChatPage() {
           </select>
         </header>
         {/* Chat Messages */}
-        <div
-          style={{
-            flex: 1,
-            overflowY: "auto",
-            padding: "32px 0 24px 0",
-            background: "#f7f7f8",
-            display: "flex",
-            flexDirection: "column",
-            gap: 16,
-          }}
-        >
+        <div className={styles.chatArea}>
           {messages.map((msg, idx) => (
             <div
               key={idx}
-              style={{
-                alignSelf: msg.role === "user" ? "flex-end" : "flex-start",
-                background: msg.role === "user" ? "#e0eaff" : "#fff",
-                color: "#222",
-                padding: "14px 20px",
-                borderRadius: 12,
-                maxWidth: "70%",
-                boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
-                fontSize: 16,
-                marginRight: msg.role === "user" ? 32 : 0,
-                marginLeft: msg.role === "assistant" ? 32 : 0,
-              }}
+              className={
+                msg.role === "user"
+                  ? styles.userMessage
+                  : styles.assistantMessage
+              }
             >
               {msg.content}
             </div>
@@ -182,47 +105,15 @@ export default function ChatPage() {
           <div ref={chatEndRef} />
         </div>
         {/* Input Box */}
-        <form
-          onSubmit={handleSend}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            padding: "20px 32px",
-            background: "#fff",
-            borderTop: "1px solid #ececec",
-            gap: 12,
-          }}
-        >
+        <form onSubmit={handleSend} className={styles.inputBox}>
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type your question..."
-            style={{
-              flex: 1,
-              padding: "14px 18px",
-              borderRadius: 8,
-              border: "1px solid #ececec",
-              fontSize: 16,
-              background: "#f7f7f8",
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) handleSend();
-            }}
+            className={styles.input}
           />
-          <button
-            type="submit"
-            style={{
-              padding: "12px 24px",
-              borderRadius: 8,
-              border: "none",
-              background: "#007aff",
-              color: "#fff",
-              fontWeight: 600,
-              fontSize: 16,
-              cursor: "pointer",
-            }}
-          >
+          <button type="submit" className={styles.sendButton}>
             Send
           </button>
         </form>
