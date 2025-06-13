@@ -6,7 +6,7 @@ export default function QueryForm() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const res = await fetch("http://localhost:8000/api/table-retriever", {
+    const res = await fetch("/api/table-retriever", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ query }),

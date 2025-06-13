@@ -9,7 +9,7 @@ _settings = get_settings()
 
 
 class TableRetrieverAgent:
-    """LLM-enriches a user query, embeds it, and fetches the top-K table IDs."""
+    """LLM-enriches a user query, embeds it, and fetches the top-K table IDs by performing a semantic search."""
 
     def __init__(self, top_k: int = 5):
         self.top_k = top_k
