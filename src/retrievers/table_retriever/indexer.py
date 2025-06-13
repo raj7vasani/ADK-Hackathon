@@ -1,7 +1,9 @@
 import json, uuid, pathlib, argparse, asyncio
 from google.cloud import storage, aiplatform
-from .config import settings
+from .config import get_settings
 from .embedder import embed_texts
+
+settings = get_settings()
 
 def build_jsonl(schemas: dict[str, str], outfile: str):
     embeddings = embed_texts(list(schemas.values()))

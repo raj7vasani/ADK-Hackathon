@@ -11,7 +11,7 @@ _settings = get_settings()
 class TableRetrieverAgent:
     """LLM-enriches a user query, embeds it, and fetches the top-K table IDs."""
 
-    def __init__(self, top_k: int = 3):
+    def __init__(self, top_k: int = 5):
         self.top_k = top_k
         self._llm = TextGenerationModel.from_pretrained(_settings.llm_model)
 
