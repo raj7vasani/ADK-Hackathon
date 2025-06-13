@@ -1,11 +1,9 @@
 """
-This script generates a JSON schema catalog for a BigQuery dataset.
+This script generates LLM-friendly text descriptions for a BigQuery dataset schema.
 """
 from google.cloud import bigquery
-import json
-from collections import defaultdict
 
-def generate_schema(project_id: str, dataset_id: str, output_file: str = "../configs/schema.json"):
+def generate_schema_text(project_id: str, dataset_id: str, output_file: str = "../configs/mock_user_sessions_description.txt"):
     client = bigquery.Client(project=project_id)
 
     # Get table descriptions
@@ -22,21 +20,33 @@ def generate_schema(project_id: str, dataset_id: str, output_file: str = "../con
     """
     columns = client.query(columns_query).result()
 
-    schema = defaultdict(lambda: {"description": "", "columns": {}})
-
+    # Organize metadata
+    schema = {}
     for row in tables:
-        schema[row.table_name]["description"] = f"{row.table_type} in {dataset_id}"
+        schema[row.table_name] = {
+            "description": f"{row.table_type} in {dataset_id}",
+            "columns": []
+        }
 
     for row in columns:
-        schema[row.table_name]["columns"][row.column_name] = row.data_type
+        if row.table_name in schema:
+            schema[row.table_name]["columns"].append((row.column_name, row.data_type))
 
-    output = {"tables": dict(schema)}
+    # Format as plain text
+    output_lines = []
+    for table_name, data in schema.items():
+        output_lines.append(f"Table: {table_name}")
+        output_lines.append(f"Description: {data['description']}")
+        output_lines.append("Columns:")
+        for col_name, col_type in data["columns"]:
+            output_lines.append(f"- {col_name}: {col_type}")
+        output_lines.append("")  # Blank line between tables
 
-    # Write to JSON
+    # Write to a text file
     with open(output_file, "w") as f:
-        json.dump(output, f, indent=2)
+        f.write("\n".join(output_lines))
 
-    print(f"✅ Schema metadata saved to {output_file}")
+    print(f"✅ Schema text saved to {output_file}")
 
 # Example usage:
-generate_schema("adk-hackathon-461216", "Mock_KPIs")
+generate_schema_text("adk-hackathon-461216", "Mock_KPIs")

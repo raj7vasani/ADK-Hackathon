@@ -1,0 +1,8 @@
+Table: mock_answers
+Description: Contains user-submitted answers to questions on the QA platform. Each answer is linked to a question and a user, and has a timestamp and textual content.
+Columns:
+- id: Unique identifier for the answer (INT64)
+- question_id: Foreign key to the associated question (INT64)
+- user_id: Foreign key to the user who answered (INT64)
+- created_at: Timestamp when the answer was submitted (TIMESTAMP)
+- content: Text content of the user's answer (STRING)

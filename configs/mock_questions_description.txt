@@ -1,0 +1,7 @@
+Table: mock_questions
+Description: Stores user-generated questions posted on the platform. Each question is associated with a user and includes a timestamp and content.
+Columns:
+- question_id: Unique identifier for the question (INT64)
+- user_id: ID of the user who posted the question (INT64)
+- created_at: When the question was posted (TIMESTAMP)
+- content: The text of the question (STRING)

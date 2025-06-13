@@ -1,62 +1,50 @@
-agentic-analytics-platform/
+ADK-Hackathon/
 │
-├── agents/
-│   ├── orchestrator/
-│   │   ├── agent.yaml
-│   │   ├── main.py
-│   │   └── utils.py
+├── src/                                  # PYTHONPATH root  (<- add to IDE)
+│   ├── agents/                           # *real* ADK agents
+│   │   ├── data_collection/              # rename (no hyphens!)  ←◆1
+│   │   │   ├── sub_agents/
+│   │   │   │   ├── data_availability_checker/   # rename folders to snake_case
+│   │   │   │   │   ├── agent.py
+│   │   │   │   │   └── __init__.py
+│   │   │   │   ├── sql_generator/
+│   │   │   │   │   ├── agent.py
+│   │   │   │   │   └── __init__.py
+│   │   │   │   └── sql_validator/
+│   │   │   │       ├── agent.py
+│   │   │   │       └── __init__.py
+│   │   │   ├── agent.py                  # orchestrates the three sub-agents
+│   │   │   └── __init__.py
+│   │   └── __init__.py
 │   │
-│   ├── data_collection/
-│   │   ├── agent.yaml
-│   │   ├── main.py
-│   │   └── connectors/
-│   │       ├── bigquery_connector.py
-│   │       ├── gcs_loader.py
-│   │       └── api_client.py
+│   ├── retrievers/
+│   │   └── table_retriever/              # rename folder  ←◆2
+│   │       ├── config.py
+│   │       ├── embedder.py
+│   │       ├── vector_store.py
+│   │       ├── core.py                   # TableRetriever class (was retriever.py)
+│   │       ├── indexer.py                # *offline* index-build helper
+│   │       └── __init__.py
 │   │
-│   ├── analysis/
-│   │   ├── agent.yaml
-│   │   ├── main.py
-│   │   ├── forecasting/
-│   │   │   └── vertex_ai_forecaster.py
-│   │   └── analytics/
-│   │       └── bigquery_runner.py
+│   ├── pipelines/
+│   │   ├── query_router.py               # TableRetriever → run_pipeline glue
+│   │   └── __init__.py
 │   │
-│   └── visualization/
-│       ├── agent.yaml
-│       ├── main.py
-│       ├── looker_studio.py
-│       └── plots.py
+│   ├── connectors/
+│   │   ├── bigquery_connector.py         # move here from retrievers  ←◆3
+│   │   └── __init__.py
+│   │
+│   ├── api/
+│   │   ├── main.py                       # FastAPI entry-point  (`src.api.main:app`)
+│   │   └── __init__.py
+│   │
+│   └── __init__.py
 │
-├── output_layer/
-│   ├── formatter.py            # for PDF/HTML/KPI dashboard formatting
-│   └── kpi_renderer.py         # output packaging
+├── configs/                              # static schema TXT files
+├── scripts/                              # CLI / one-off dev scripts
+│   └── generate_schema_catalog.py
 │
-├── delivery_channel/
-│   ├── slack_notifier.py
-│   ├── email_sender.py
-│   └── web_dashboard.py        # optional: lightweight dashboard endpoint
-│
-├── data_sources/
-│   ├── schemas/
-│   │   ├── events_schema.json
-│   │   └── salesforce_schema.json
-│   └── mock_data/              # For local testing
-│       ├── sample_bq_data.csv
-│       └── event_logs.json
-│
-├── shared/
-│   ├── logger.py
-│   ├── agent_interface.py      # Base class for all agents
-│   └── config.py               # Env variables, secrets, endpoints
-│
-├── tests/
-│   ├── test_orchestrator.py
-│   ├── test_data_collection.py
-│   ├── test_analysis.py
-│   └── test_visualization.py
-│
-├── .env                        # For API keys, project config
+├── frontend/ (optional)                  # React / Vite chat UI
 ├── requirements.txt
-├── README.md
-└── adk_project.yaml            # ADK-specific configuration
+├── Dockerfile                            # Cloud-Run build
+└── .env

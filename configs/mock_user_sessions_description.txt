@@ -1,0 +1,7 @@
+Table: mock_user_sessions
+Description: Tracks user session activity such as session duration and date. Useful for engagement analysis and retention metrics.
+Columns:
+- session_id: Unique identifier for a user session (STRING)
+- user_id: ID of the user who had the session (INT64)
+- duration_min: Length of the session in minutes (FLOAT64)
+- session_date: Date on which the session occurred (DATE)

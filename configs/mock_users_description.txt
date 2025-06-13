@@ -1,0 +1,7 @@
+Table: mock_users
+Description: User profile information including personal identifiers and basic metadata such as name, email, and date of birth.
+Columns:
+- id: Primary key for the user (INT64)
+- name: User's display name (STRING)
+- email: User's email address (STRING)
+- birthday: User's birth date (DATE)
