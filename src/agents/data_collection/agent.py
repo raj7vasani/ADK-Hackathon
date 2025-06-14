@@ -4,9 +4,9 @@ Sequential Agent for Data Collection
 
 from google.adk.agents import SequentialAgent
 
-from .subagents.Data-Availability-Checker import data_availability_agent
-from .subagents.SQL-Generator import sql_generation_agent
-from .subagents.SQL-Validator import sql_validation_agent
+from .sub_agents.data_availability_checker.agent import data_availability_agent
+from .sub_agents.sql_generator.agent import sql_generation_agent
+from .sub_agents.sql_validator.agent import sql_validator_agent
 
 root_agent = SequentialAgent(
     name="Data Collection Agent",
