@@ -10,7 +10,7 @@ from google.adk.tools import FunctionTool
 env_path = Path(__file__).resolve().parents[2] / ".env"
 load_dotenv(env_path)
 FAST_LLM_MODEL = os.getenv("FAST_LLM_MODEL")
-
+GEMINI_MODEL = "gemini-2.0-flash"
 # ─── Tool: Read all schema files using relative path ───────
 def read_all_schema_texts() -> str:
     """
@@ -43,7 +43,7 @@ data_availability_agent = LlmAgent(
         "Checks whether a user's natural-language query can be answered using "
         "tables/fields defined across multiple .txt schema files in configs/."
     ),
-    model=FAST_LLM_MODEL,
+    model=GEMINI_MODEL,
     tools=[schema_tool],
     instruction="""
     You are the Data Availability Agent.

@@ -15,10 +15,10 @@ from pathlib import Path
 
 load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 FAST_LLM_MODEL = os.getenv("FAST_LLM_MODEL")
-
+GEMINI_MODEL = "gemini-2.0-flash"
 sql_validator_llm = LlmAgent(
     name="SQLValidatorLLM",
-    model=FAST_LLM_MODEL,
+    model=GEMINI_MODEL,
     instruction="""
                 You are an expert SQL Validator.
 

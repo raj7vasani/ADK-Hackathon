@@ -25,73 +25,80 @@ The agent emits a short confirmation event when a retry is performed.
 """
 
 from __future__ import annotations
-
-from typing import AsyncGenerator
+from typing import Any, AsyncGenerator
+from pydantic import PrivateAttr        # ← import this
 from google.adk.agents import BaseAgent
-from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events import Event
-from google.genai import types
+from google.adk.agents.invocation_context import InvocationContext
+import asyncio
 
 
 class SqlRepairAgent(BaseAgent):
-    name = "SqlRepairAgent"
-    description = "Regenerates SQL if the validator reports a failure."
+    # ──────────────────────────────────────────────────────────────────────
+    # Declare private attributes that Pydantic should ignore at runtime
+    # ──────────────────────────────────────────────────────────────────────
+    _generator: Any = PrivateAttr()
+    _validator: Any = PrivateAttr()
 
-    def __init__(self):
-        # Deferred imports to avoid circular issues in agent trees
-        from src.agents.data_collection.sub_agents.sql_generator.agent import sql_generator_agent
-        from src.agents.data_collection.sub_agents.sql_validator.agent import sql_validator_llm
+    def __init__(self) -> None:
+        super().__init__(
+            name="SqlRepairAgent",
+            description="Regenerates SQL if the validator reports a failure.",
+        )
 
-        self.generator = sql_generator_agent
-        self.validator = sql_validator_llm
+        # Lazy import to dodge circular-import headaches
+        from data_collection.sub_agents.sql_generator.agent import (
+            sql_generation_agent,
+        )
+        from data_collection.sub_agents.sql_validator.agent import sql_validator_llm
 
+        # Save the other agents on the private attrs
+        self._generator = sql_generation_agent
+        self._validator = sql_validator_llm
+
+    # ------------------------------------------------------------------
+    # Implementation
+    # ------------------------------------------------------------------
     async def _run_async_impl(
         self, ctx: InvocationContext
     ) -> AsyncGenerator[Event, None]:
-        state = ctx.session.state
+        state = ctx.state
+        validation_status: str = state.get("validation_status", "")
 
-        validation_status = state.get("validation_status", "")
         if validation_status.startswith("valid"):
-            return  # No repair needed
+            return  # Already good; nothing to do
 
         bad_sql = state.get("sql_query", "")
         user_request = state.get("user_request", "")
 
         if not bad_sql or not user_request:
-            yield Event.from_content(ctx, "⚠️ Missing SQL or user request in state.")
+            yield Event.from_content(
+                ctx, "⚠️ Missing sql_query or user_request in state."
+            )
             return
 
-        # ─────────────────────────────────────────────────────────────────────
-        # Generate corrected SQL using the validation error and original input
-        # ─────────────────────────────────────────────────────────────────────
         retry_prompt = f"""
             The following SQL query was invalid:
 
             ```sql
             {bad_sql}
-            Validation error:
+            Validator said:
             {validation_status}
 
-            Please regenerate a correct BigQuery SQL query that fulfills the original user request:
-
+            Please regenerate a correct BigQuery SQL statement that fulfils:
             "{user_request}"
-
-            Make sure the new SQL:
-
-            Corrects the above error
-            Is syntactically correct
-            Is compatible with BigQuery
-            Uses valid clauses and schema references
-            Return ONLY the corrected SQL without extra commentary.
+            Return only the SQL, no commentary.
             """
-        
-        new_sql = self.generator.run(prompt=retry_prompt).get("sql_query", "").strip()
+
+        new_sql = (
+            self._generator.run(prompt=retry_prompt).get("sql_query", "").strip()
+        )
         if not new_sql:
-            yield Event.from_content(ctx, "⚠️ SQL regeneration failed: empty result.")
+            yield Event.from_content(ctx, "⚠️ SQL regeneration returned empty text.")
             return
 
-        # Update state with new query and re-validate
         state["sql_query"] = new_sql
-        state["validation_status"] = self.validator.run(sql_query=new_sql).get("validation_status", "").strip()
-
-        yield Event.from_content(ctx, "🔄 SQL regenerated and revalidated.")
+        state["validation_status"] = (
+            self._validator.run(sql_query=new_sql).get("validation_status", "").strip()
+        )
+sql_repair_agent = SqlRepairAgent()

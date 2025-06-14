@@ -1,1 +1,1 @@
-from . import agent
+from .agent import sql_generation_agent

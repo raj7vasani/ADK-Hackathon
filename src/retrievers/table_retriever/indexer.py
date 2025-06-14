@@ -36,4 +36,3 @@ def deploy_index(idx):
     ep.deploy_index(index=idx, deployed_index_id=f"di-{uuid.uuid4().hex[:6]}")
     return ep
 
-# CLI omitted for brevity

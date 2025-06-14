@@ -32,12 +32,17 @@ from google.adk.agents import BaseAgent
 from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events import Event
 
+from typing import ClassVar
+
 from src.connectors.bigquery_connector import fetch_data
 
 
 class BigQueryFetcherAgent(BaseAgent):
-    name = "BigQueryFetcherAgent"
-    description = "Runs a validated SQL query on BigQuery and returns the result as a downloadable CSV."
+    def __init__(self):
+        super().__init__(
+            name="BigQueryFetcherAgent",
+            description="Runs the SQL when validator says 'valid', produces a downloadable CSV."
+        )
 
     # ──────────────────────────────────────────────────────────────────────────
     # Core async implementation
