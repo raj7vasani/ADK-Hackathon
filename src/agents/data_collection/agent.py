@@ -13,7 +13,9 @@ from .sub_agents.data_availability_checker.agent import data_availability_agent
 from .sub_agents.sql_generator.agent import sql_generation_agent
 from .sub_agents.sql_validator.agent import sql_validator_llm
 from .sub_agents.sql_fetcher.agent import BigQueryFetcherAgent
+from .sub_agents.sql_repair_agent.agent import SqlRepairAgent
 
+sql_repair_agent = SqlRepairAgent()
 sql_fetcher_agent = BigQueryFetcherAgent()
 
 root_agent = SequentialAgent(
@@ -26,6 +28,7 @@ root_agent = SequentialAgent(
         data_availability_agent,
         sql_generation_agent,            # adds sql_query + user_request
         sql_validator_llm,               # adds validation_status
+        sql_repair_agent,                # adds sql_query + user_request
         sql_fetcher_agent,          # consumes above and attaches CSV
     ],
 )
