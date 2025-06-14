@@ -7,37 +7,27 @@ Description:
     detailed error feedback to the SQL Generation Agent to trigger a regeneration cycle.
 """
 
-from google.adk.agents import BaseAgent
+# src/agents/data_collection/sub_agents/sql_validator/validator_llm.py
 from google.adk.agents import LlmAgent
-from src.connectors.bigquery_connector import fetch_data
-from src.agents.data_collection.sub_agents.sql_generator.agent import sql_generator_agent
 import os
 from dotenv import load_dotenv
 from pathlib import Path
-import pandas as pd
 
-# Load .env from project root
-env_path = Path(__file__).resolve().parents[2] / ".env"
-load_dotenv(dotenv_path=env_path)
-
+load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 FAST_LLM_MODEL = os.getenv("FAST_LLM_MODEL")
 
-# SQL Validator Agent (LLM)
-class SQLValidatorExecutorAgent(BaseAgent):
-    name = "SQLValidatorExecutorAgent"
-    description = "Validates the SQL query and runs it if valid, otherwise triggers regeneration."
-
-    def __init__(self):
-        self.validator = LlmAgent(
-            name="SQLValidatorAgent",
-            model=FAST_LLM_MODEL,
-            instruction="""
+sql_validator_llm = LlmAgent(
+    name="SQLValidatorLLM",
+    model=FAST_LLM_MODEL,
+    instruction="""
                 You are an expert SQL Validator.
 
                 You will receive a SQL query intended to be executed on Google BigQuery. Your job is to validate:
                 1. The SQL syntax (must be valid SQL).
                 2. The BigQuery dialect compatibility.
                 3. The structure of the query.
+
+                Basically, the SQL query should be valid and should be able to be executed without any errors on BigQuery.
 
                 Rules:
                 - If the query is valid, return only: valid
@@ -50,45 +40,5 @@ class SQLValidatorExecutorAgent(BaseAgent):
 
                 Do not provide additional text or explanation.
                 """,
-            output_key="validation_status"
-        )
-        self.generator = sql_generator_agent
-
-    def run(self, sql_query: str, user_request: str) -> dict:
-        result = self.validator.run(sql_query=sql_query)
-        status = result.get("validation_status", "").strip().lower()
-
-        if status == "valid":
-            df = fetch_data(sql_query)
-            return {"data": df.to_dict(orient="records")}
-
-        retry_prompt = f"""
-            The following SQL query was generated but is invalid:
-            ```sql
-            {sql_query}
-            Validation Error:
-            {status}
-
-            Please regenerate a corrected BigQuery SQL query that fulfills the original request:
-
-            "{user_request}"
-
-            Make sure the new SQL:
-
-            Fixes the above error
-            Is syntactically correct
-            Is compatible with BigQuery
-            Uses correct clauses and field references
-            Output only the corrected SQL.
-            """
-        retry = self.generator.run(prompt=retry_prompt)
-        new_sql = retry.get("sql_query", "").strip()
-
-        retry_result = self.validator.run(sql_query=new_sql)
-        retry_status = retry_result.get("validation_status", "").strip().lower()
-
-        if retry_status == "valid":
-            df = fetch_data(new_sql)
-            return {"data": df.to_dict(orient="records")}
-        else:
-            return {"error": f"Query invalid even after retry. Final error: {retry_status}"}
+    output_key="validation_status",
+)
