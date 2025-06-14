@@ -40,7 +40,7 @@ class SqlRepairAgent(BaseAgent):
     def __init__(self):
         # Deferred imports to avoid circular issues in agent trees
         from src.agents.data_collection.sub_agents.sql_generator.agent import sql_generator_agent
-        from src.agents.data_collection.sub_agents.sql_validator.validator_llm import sql_validator_llm
+        from src.agents.data_collection.sub_agents.sql_validator.agent import sql_validator_llm
 
         self.generator = sql_generator_agent
         self.validator = sql_validator_llm
