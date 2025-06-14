@@ -26,8 +26,7 @@ def read_all_schema_texts() -> str:
     return "\n\n".join(contents)
 
 schema_tool = FunctionTool(
-    func=read_all_schema_texts,
-    description="Loads all .txt schema files from configs/ directory using relative paths"
+    func=read_all_schema_texts
 )
 
 # ─── Structured Output Schema ────────────────────────────────
@@ -39,7 +38,7 @@ class AvailabilityOutput(BaseModel):
 
 # ─── LLM Agent Definition ───────────────────────────────────
 data_availability_agent = LlmAgent(
-    name="Data Availability Agent",
+    name="DataAvailabilityAgent",
     description=(
         "Checks whether a user's natural-language query can be answered using "
         "tables/fields defined across multiple .txt schema files in configs/."
@@ -65,6 +64,5 @@ data_availability_agent = LlmAgent(
         if available is true: return a message in short that query can be answered.
     
 """,
-    output_schema=AvailabilityOutput,
     output_key="availability",
 )
