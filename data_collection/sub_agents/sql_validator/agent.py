@@ -22,7 +22,10 @@ sql_validator_llm = LlmAgent(
     instruction="""
                 You are an expert SQL Validator.
 
-                You will receive a SQL query intended to be executed on Google BigQuery. Your job is to validate:
+                You will receive a SQL query intended to be executed on Google BigQuery: 
+                {{sql_query}}
+                
+                Your job is to validate:
                 1. The SQL syntax (must be valid SQL).
                 2. The BigQuery dialect compatibility.
                 3. The structure of the query.

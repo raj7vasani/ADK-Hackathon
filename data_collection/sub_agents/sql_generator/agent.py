@@ -29,7 +29,7 @@ from google.adk.agents import BaseAgent, LlmAgent
 from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events.event import Event                    # <-- use this
 from google.genai import types                               # for Content/Part
-import json, os
+import json, os, re
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -67,7 +67,9 @@ class SQLGeneratorWrapper(BaseAgent):
     async def _run_async_impl(self, ctx: InvocationContext):
         st = ctx.session.state
 
-        raw = st.get("availability_result", "")
+        raw = st.get("availability_result", "").strip()
+        raw = re.sub(r'^```(?:json)?\s*', '', raw)
+        raw = re.sub(r'\s*```$', '', raw).strip()
         if not raw:
             yield make_msg(self.name, "❌ availability_result missing")
             return

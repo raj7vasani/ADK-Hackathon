@@ -95,7 +95,9 @@ data_availability_agent = LlmAgent(
     }
 
     Guidelines:
-    - Output must be valid JSON (do not include markdown or extra commentary).
+    - Output must be **bare JSON** 
+    – absolutely no ``` fences, no language tags,
+    - no extra commentary. Returning anything else will break downstream parsing.
     - If the query cannot be answered, set `"available": false` and still return the schema.
 """,
     output_key="availability_result",
