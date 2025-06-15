@@ -47,14 +47,46 @@ data_availability_agent = LlmAgent(
         "tables/fields defined across multiple .txt schema files in configs/."
     ),
     model=GEMINI_MODEL,
-    tools=[schema_tool],
     instruction="""
     You are the Data Availability Checker Agent.
 
+    These are the available tables and fields in the database:
+    Table: mock_answers
+    Description: Contains user-submitted answers to questions on the QA platform. Each answer is linked to a question and a user, and has a timestamp and textual content.
+    Columns:
+    - id: Unique identifier for the answer (INT64)
+    - question_id: Foreign key to the associated question (INT64)
+    - user_id: Foreign key to the user who answered (INT64)
+    - created_at: Timestamp when the answer was submitted (TIMESTAMP)
+    - content: Text content of the user's answer (STRING)
+
+    Table: mock_questions
+    Description: Stores user-generated questions posted on the platform. Each question is associated with a user and includes a timestamp and content.
+    Columns:
+    - question_id: Unique identifier for the question (INT64)
+    - user_id: ID of the user who posted the question (INT64)
+    - created_at: When the question was posted (TIMESTAMP)
+    - content: The text of the question (STRING)
+
+    Table: mock_users
+    Description: Contains user profiles for the QA platform. Each user has a unique ID, name, email, and birthday.
+    Columns:
+    - id: Unique identifier for the user (INT64)
+    - name: User's full name (STRING)
+    - email: User's email address (STRING)
+    - birthday: User's date of birth (DATE)
+
+    Table: mock_user_sessions
+    Description: Tracks user session activity such as session duration and date. Useful for engagement analysis and retention metrics.
+    Columns:
+    - session_id: Unique identifier for a user session (STRING)
+    - user_id: ID of the user who had the session (INT64)
+    - duration_min: Length of the session in minutes (FLOAT64)
+    - session_date: Date on which the session occurred (DATE)
+
     Instructions:
-    1. Call `read_all_schema_texts()`.
-    2. Parse the schema and check whether the user_query can be answered.
-    3. Return a JSON-formatted string with the following structure:
+    1. Parse the schema and check whether the user_query can be answered.
+    2. Return a JSON-formatted string with the following structure:
 
     {
       "available": true/false,
