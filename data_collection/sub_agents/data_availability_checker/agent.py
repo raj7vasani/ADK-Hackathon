@@ -33,18 +33,11 @@ schema_tool = FunctionTool(
     func=read_all_schema_texts
 )
 
-# ─── Structured Output Schema ────────────────────────────────
-class AvailabilityOutput(BaseModel):
-    available: str
-    user_query: str
-    raw_schema_text: str
-
 # ─── LLM Agent Definition ───────────────────────────────────
 data_availability_agent = LlmAgent(
     name="DataAvailabilityAgent",
     description=(
-        "Checks whether a user's natural-language query can be answered using "
-        "tables/fields defined across multiple .txt schema files in configs/."
+        "Checks whether a user's natural-language query can be answered using the available tables and fields in the database."
     ),
     model=GEMINI_MODEL,
     instruction="""
