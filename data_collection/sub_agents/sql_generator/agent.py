@@ -47,6 +47,7 @@ _sql_llm = LlmAgent(
 You are a BigQuery SQL generator.
 • Question: {{user_request}}
 • Schema : {{table_context}}
+All tables live in dataset `Mock_KPIs`. **Always qualify tables**: e.g. `Mock_KPIs.<table_name>`
 Return raw SQL only (no markdown, no comments).
 """,
     output_key="sql_query",

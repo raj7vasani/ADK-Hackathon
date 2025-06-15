@@ -29,11 +29,13 @@ sql_validator_llm = LlmAgent(
                 1. The SQL syntax (must be valid SQL).
                 2. The BigQuery dialect compatibility.
                 3. The structure of the query.
+                4. If the dataset name is included in the query. The dataset name is `Mock_KPIs` and it should be included in the query, otherwise it is invalid.
+                So, for example, if the query is `SELECT * FROM Mock_KPIs.mock_users`, it is valid, but if the query is `SELECT * FROM mock_users`, it is invalid.
 
                 Basically, the SQL query should be valid and should be able to be executed without any errors on BigQuery.
 
                 Rules:
-                - If the query is valid, return only: valid
+                - If the query is valid, return **exactly**: valid (lower-case, no spaces, no period)
                 - If invalid, return: invalid: <reason>
 
                 Examples:
