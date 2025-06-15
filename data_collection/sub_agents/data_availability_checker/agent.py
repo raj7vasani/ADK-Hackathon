@@ -17,7 +17,11 @@ def read_all_schema_texts() -> str:
     Reads all .txt schema files from the 'configs' folder,
     concatenates them into one raw string.
     """
-    base_dir = Path(__file__).resolve().parents[2]
+
+    print(Path(__file__).resolve().parents[3] / "configs")  # should print real folder
+    print((Path(__file__).resolve().parents[3] / "configs").glob("*.txt"))
+    base_dir = Path(__file__).resolve().parents[3]
+    print(base_dir)
     schema_dir = base_dir / "configs"
     contents = []
     for path in schema_dir.glob("*.txt"):
@@ -31,10 +35,9 @@ schema_tool = FunctionTool(
 
 # ─── Structured Output Schema ────────────────────────────────
 class AvailabilityOutput(BaseModel):
-    available: bool
-    missing_tables: List[str]
-    missing_fields: Dict[str, List[str]]
-    explanation: str
+    available: str
+    user_query: str
+    raw_schema_text: str
 
 # ─── LLM Agent Definition ───────────────────────────────────
 data_availability_agent = LlmAgent(
@@ -46,23 +49,22 @@ data_availability_agent = LlmAgent(
     model=GEMINI_MODEL,
     tools=[schema_tool],
     instruction="""
-    You are the Data Availability Agent.
+    You are the Data Availability Checker Agent.
 
-    Inputs:
-    - user_query (string)
-    - tool output: raw_schema_text (all .txt files concatenated)
+    Instructions:
+    1. Call `read_all_schema_texts()`.
+    2. Parse the schema and check whether the user_query can be answered.
+    3. Return a JSON-formatted string with the following structure:
 
-    Tasks:
-    1. Parse raw_schema_text to extract table definitions and columns.
-    2. Identify which tables/columns are implied by the user_query.
-    3. Check availability against parsed metadata.
-    4. Format your response as below syntax.
-    Output Format:
-    
-        available: true/false?,
-        if available is false: return a to the user that message in short that query cannot be answered. 
-        if available is true: return a message in short that query can be answered.
-    
+    {
+      "available": true/false,
+      "user_query": "<same as input>",
+      "raw_schema_text": "<entire schema text used>"
+    }
+
+    Guidelines:
+    - Output must be valid JSON (do not include markdown or extra commentary).
+    - If the query cannot be answered, set `"available": false` and still return the schema.
 """,
-    output_key="availability",
+    output_key="availability_result",
 )

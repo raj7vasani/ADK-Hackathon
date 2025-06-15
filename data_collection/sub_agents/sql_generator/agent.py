@@ -25,47 +25,72 @@ Simply import `sql_generation_agent` in your root pipeline; no wrapper code
 required.
 """
 
-from __future__ import annotations
-
-import os
+from google.adk.agents import BaseAgent, LlmAgent
+from google.adk.agents.invocation_context import InvocationContext
+from google.adk.events.event import Event                    # <-- use this
+from google.genai import types                               # for Content/Part
+import json, os
 from pathlib import Path
 from dotenv import load_dotenv
-from google.adk.agents import LlmAgent
 
-# ──────────────────────────────────────────────────────────────────────────────
-# Load model name from .env  (e.g., FAST_LLM_MODEL=gemini-1.5-flash)
-# ──────────────────────────────────────────────────────────────────────────────
-env_path = Path(__file__).resolve().parents[4] / ".env"  # adjust depth if needed
-load_dotenv(dotenv_path=env_path)
-FAST_LLM_MODEL = os.getenv("FAST_LLM_MODEL", "gemini-1.5-flash")
-GEMINI_MODEL = "gemini-2.0-flash"
-# ──────────────────────────────────────────────────────────────────────────────
-# LLM-powered SQL Generator
-# ──────────────────────────────────────────────────────────────────────────────
-sql_generation_agent = LlmAgent(
-    name="SQLGeneratorAgent",
-    model=GEMINI_MODEL,
-    description="Generates a BigQuery-compatible SQL query from natural language.",
-    # The prompt sees {{user_request}} and {{table_context}} auto-injected
+# ─── Config ──────────────────────────────────────────────────
+env_path = Path(__file__).resolve().parents[4] / ".env"
+load_dotenv(env_path)
+MODEL = os.getenv("FAST_LLM_MODEL", "gemini-2.0-flash")
+
+# ─── Pure LLM agent that writes state["sql_query"] ───────────
+_sql_llm = LlmAgent(
+    name="SQLGeneratorLlm",
+    model=MODEL,
+    description="Generates BigQuery SQL.",
     instruction="""
-You are an expert analytics engineer who writes **efficient BigQuery SQL**.
-
-Your task:
-1. Read the user's English request: {{user_request}}
-2. Consult ONLY the available schema definitions: {{table_context}}
-3. Produce a single, correct SQL statement for Google BigQuery.
-   • Use fully-qualified table names when provided.
-   • Alias tables & columns clearly.
-   • Prefer CTEs for readability if multiple steps are needed.
-   • Do NOT include back-ticks ``` or Markdown fencing.
-   • Do NOT add explanations or comments—return only raw SQL.
-
-Output format:
-<SQL starts on first line>
-SELECT ...
-...
-;  -- terminating semicolon optional
+You are a BigQuery SQL generator.
+• Question: {{user_request}}
+• Schema : {{table_context}}
+Return raw SQL only (no markdown, no comments).
 """,
-    # LlmAgent will automatically save the final response text to this key
     output_key="sql_query",
 )
+
+# ─── Helper to create a text-only Event ──────────────────────
+def make_msg(author: str, text: str) -> Event:
+    return Event(
+        author=author,
+        content=types.Content(parts=[types.Part(text=text)]),
+    )
+
+# ─── Wrapper agent ───────────────────────────────────────────
+class SQLGeneratorWrapper(BaseAgent):
+    name: str = "SQLGeneratorAgent"
+    description: str = "Parses availability_result and calls the SQL LLM."
+
+    async def _run_async_impl(self, ctx: InvocationContext):
+        st = ctx.session.state
+
+        raw = st.get("availability_result", "")
+        if not raw:
+            yield make_msg(self.name, "❌ availability_result missing")
+            return
+
+        raw = raw.strip("`").strip()
+        try:
+            avail = json.loads(raw)
+        except json.JSONDecodeError as e:
+            yield make_msg(self.name, f"❌ JSON parse error: {e}")
+            return
+
+        if not avail.get("available", False):
+            yield make_msg(self.name, "❌ Query cannot be answered with current schema.")
+            return
+
+        # push data for the LLM prompt
+        st["user_request"]  = avail["user_query"]
+        st["table_context"] = avail["raw_schema_text"]
+
+        # delegate to the LLM agent
+        async for ev in _sql_llm.run_async(ctx):
+            yield ev
+
+
+# exported instance
+sql_generation_agent = SQLGeneratorWrapper()

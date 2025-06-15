@@ -18,6 +18,7 @@ from .sub_agents.sql_repair_agent.agent import SqlRepairAgent
 sql_repair_agent = SqlRepairAgent()
 sql_fetcher_agent = BigQueryFetcherAgent()
 
+
 root_agent = SequentialAgent(
     name="DataCollectionAgent",
     description=(
