@@ -24,7 +24,7 @@ Outputs written to session.state:
 The agent emits a short confirmation event when a retry is performed.
 """
 
-# data_collection/sub_agents/sql_repair_agent/agent.py
+# data_analysis_agent/subagents/sql_repair_agent/agent.py
 from __future__ import annotations
 from typing import AsyncGenerator, Any
 
@@ -32,8 +32,6 @@ from google.adk.agents import BaseAgent
 from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events.event import Event
 from pydantic import PrivateAttr
-
-import asyncio
 
 
 class SqlRepairAgent(BaseAgent):
@@ -46,11 +44,11 @@ class SqlRepairAgent(BaseAgent):
             description="Regenerates SQL if the validator reports a failure.",
         )
         # Lazy imports to avoid circular refs
-        from data_collection.sub_agents.sql_generator.agent import sql_generation_agent
-        from data_collection.sub_agents.sql_validator.agent import sql_validator_llm
+        from ..sql_generator_agent.agent import sql_generator_agent
+        from ..sql_validator_agent.agent import sql_validator_agent
 
-        self._generator = sql_generation_agent
-        self._validator = sql_validator_llm
+        self._generator = sql_generator_agent
+        self._validator = sql_validator_agent
 
     async def _run_async_impl(
         self, ctx: InvocationContext
@@ -66,7 +64,7 @@ class SqlRepairAgent(BaseAgent):
         if not bad_sql or not user_request:
             yield Event(
                 author=self.name,
-                content=dict(parts=[dict(text="⚠️ missing sql_query or user_request")])
+                content=dict(parts=[dict(text="missing sql_query or user_request")])
             )
             return
 

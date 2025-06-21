@@ -7,20 +7,26 @@ Description:
     detailed error feedback to the SQL Generation Agent to trigger a regeneration cycle.
 """
 
-# src/agents/data_collection/sub_agents/sql_validator/validator_llm.py
 from google.adk.agents import LlmAgent
 import os
 from dotenv import load_dotenv
 from pathlib import Path
 
-load_dotenv(Path(__file__).resolve().parents[2] / ".env")
+current_path = Path(__file__).resolve()
+for parent in current_path.parents:
+    env_file = parent / ".env"
+    if env_file.exists():
+        load_dotenv(env_file)
+        break
+
 FAST_LLM_MODEL = os.getenv("FAST_LLM_MODEL")
 GEMINI_MODEL = "gemini-2.0-flash"
-sql_validator_llm = LlmAgent(
-    name="SQLValidatorLLM",
+
+sql_validator_agent = LlmAgent(
+    name="SqlValidatorAgent",
     model=GEMINI_MODEL,
     instruction="""
-                You are an expert SQL Validator.
+                You are an expert SQL Validator Agent.
 
                 You will receive a SQL query intended to be executed on Google BigQuery: 
                 {{sql_query}}

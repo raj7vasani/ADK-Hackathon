@@ -6,36 +6,20 @@ from dotenv import load_dotenv
 from pathlib import Path
 from google.adk.tools import FunctionTool
 
-# ─── Load environment ───────────────────────────────────────
-env_path = Path(__file__).resolve().parents[2] / ".env"
-load_dotenv(env_path)
+current_path = Path(__file__).resolve()
+for parent in current_path.parents:
+    env_file = parent / ".env"
+    if env_file.exists():
+        load_dotenv(env_file)
+        break
+
 FAST_LLM_MODEL = os.getenv("FAST_LLM_MODEL")
 GEMINI_MODEL = "gemini-2.0-flash"
-# ─── Tool: Read all schema files using relative path ───────
-def read_all_schema_texts() -> str:
-    """
-    Reads all .txt schema files from the 'configs' folder,
-    concatenates them into one raw string.
-    """
 
-    print(Path(__file__).resolve().parents[3] / "configs")  # should print real folder
-    print((Path(__file__).resolve().parents[3] / "configs").glob("*.txt"))
-    base_dir = Path(__file__).resolve().parents[3]
-    print(base_dir)
-    schema_dir = base_dir / "configs"
-    contents = []
-    for path in schema_dir.glob("*.txt"):
-        with open(path, "r", encoding="utf-8") as f:
-            contents.append(f.read())
-    return "\n\n".join(contents)
-
-schema_tool = FunctionTool(
-    func=read_all_schema_texts
-)
 
 # ─── LLM Agent Definition ───────────────────────────────────
-data_availability_agent = LlmAgent(
-    name="DataAvailabilityAgent",
+data_availability_checker_agent = LlmAgent(
+    name="DataAvailabilityCheckerAgent",
     description=(
         "Checks whether a user's natural-language query can be answered using the available tables and fields in the database."
     ),
@@ -44,6 +28,7 @@ data_availability_agent = LlmAgent(
     You are the Data Availability Checker Agent.
 
     These are the available tables and fields in the database:
+    
     Table: mock_answers
     Description: Contains user-submitted answers to questions on the QA platform. Each answer is linked to a question and a user, and has a timestamp and textual content.
     Columns:
@@ -89,9 +74,9 @@ data_availability_agent = LlmAgent(
 
     Guidelines:
     - Output must be **bare JSON** 
-    – absolutely no ``` fences, no language tags,
-    - no extra commentary. Returning anything else will break downstream parsing.
-    - If the query cannot be answered, set `"available": false` and still return the schema.
+    – absolutely no ``` fences, no language tags, no extra commentary. 
+    - Returning anything else will break downstream parsing.
+    - If the query cannot be answered, set `"available": false and still return the schema.
 """,
     output_key="availability_result",
 )
