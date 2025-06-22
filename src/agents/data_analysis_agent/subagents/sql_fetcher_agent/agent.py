@@ -23,13 +23,18 @@ from google.adk.agents import BaseAgent
 from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events import Event
 
-from src.connectors.bigquery_connector import fetch_data
+
+
+
+
+from .bigquery_connector import fetch_data
+
 
 
 class BigQueryFetcherAgent(BaseAgent):
     def __init__(self) -> None:
         super().__init__(
-            name="BigQueryFetcherAgent",
+            name="SqlFetcherAgent",
             description="Executes validated SQL and prints the resulting DataFrame.",
         )
 
@@ -37,6 +42,7 @@ class BigQueryFetcherAgent(BaseAgent):
         self, ctx: InvocationContext
     ) -> AsyncGenerator[Event, None]:
         state = ctx.session.state
+
 
         # 1️⃣ Guard-check
         sql_query: str | None = state.get("sql_query")
@@ -72,3 +78,4 @@ class BigQueryFetcherAgent(BaseAgent):
                 types.Part(text=f"✅ Query returned **{len(df):,} rows**\n\n```\n{table_text}\n```")
             ]),
         )
+sql_fetcher_agent = BigQueryFetcherAgent()
