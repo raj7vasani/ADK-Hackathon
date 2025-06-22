@@ -14,7 +14,7 @@ for parent in current_path.parents:
         break
 
 FAST_LLM_MODEL = os.getenv("FAST_LLM_MODEL")
-GEMINI_MODEL = "gemini-2.0-flash"
+GEMINI_MODEL = "gemini-1.5-flash"
 
 
 # ─── LLM Agent Definition ───────────────────────────────────
