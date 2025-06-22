@@ -78,7 +78,7 @@ data_availability_agent = LlmAgent(
     - session_date: Date on which the session occurred (DATE)
 
     Instructions:
-    1. Parse the schema and check whether the user_query can be answered.
+    1. Parse the schema and check it with the user_query if it can be answered or not with the available tables and fields.
     2. Return a JSON-formatted string with the following structure:
 
     {

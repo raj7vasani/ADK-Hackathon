@@ -4,7 +4,7 @@
 """
 from typing import Dict, Any
 from src.retrievers.table_retriever import TableRetriever
-from agents.data_collection.sub_agents.agent import run_pipeline  # adjust path if your agent object differs
+from data_collection.sub_agents import run_pipeline  # adjust path if your agent object differs
 
 table_retriever = TableRetriever(top_k=3)
 

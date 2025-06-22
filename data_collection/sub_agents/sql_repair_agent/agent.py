@@ -33,8 +33,6 @@ from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events.event import Event
 from pydantic import PrivateAttr
 
-import asyncio
-
 
 class SqlRepairAgent(BaseAgent):
     _generator: Any = PrivateAttr()
