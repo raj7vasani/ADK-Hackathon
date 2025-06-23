@@ -85,4 +85,6 @@ websockets==15.0.1
 zipp==3.23.0
 db-dtypes>=1.2.0
 pyarrow>=15.0.0
+requests>=2.31
+beautifulsoup4>=4.12
 
