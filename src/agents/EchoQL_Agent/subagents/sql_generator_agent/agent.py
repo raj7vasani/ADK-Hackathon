@@ -6,7 +6,7 @@ import json, os, re
 from pathlib import Path
 from dotenv import load_dotenv
 
-# ─── Config ──────────────────────────────────────────────────
+# Config 
 current_path = Path(__file__).resolve()
 for parent in current_path.parents:
     env_file = parent / ".env"
@@ -17,7 +17,7 @@ FAST_LLM_MODEL = os.getenv("FAST_LLM_MODEL")
 GEMINI_MODEL = "gemini-1.5-flash"
 
 
-# ─── Pure LLM agent that writes state["sql_query"] ───────────
+# Pure LLM agent that writes state["sql_query"] 
 _sql_llm = LlmAgent(
     name="SqlGeneratorLlm",
     model=GEMINI_MODEL,
@@ -32,14 +32,14 @@ Return raw SQL only (no markdown, no comments).
     output_key="sql_query",
 )
 
-# ─── Helper to create a text-only Event ──────────────────────
+# Helper to create a text-only Event 
 def make_msg(author: str, text: str) -> Event:
     return Event(
         author=author,
         content=types.Content(parts=[types.Part(text=text)]),
     )
 
-# ─── Wrapper agent ───────────────────────────────────────────
+# Wrapper agent 
 class SqlGeneratorWrapper(BaseAgent):
     name: str = "SqlGeneratorAgent"
     description: str = "Parses availability_result and calls the SQL LLM."

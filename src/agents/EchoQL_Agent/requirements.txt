@@ -19,7 +19,7 @@ google-auth-httplib2==0.2.0
 google-cloud-aiplatform==1.98.0
 google-cloud-appengine-logging==1.6.2
 google-cloud-audit-log==0.3.2
-google-cloud-bigquery==3.34.0
+google-cloud-bigquery[pandas]>=3.34.0
 google-cloud-core==2.4.3
 google-cloud-logging==3.12.1
 google-cloud-resource-manager==1.14.2
@@ -83,3 +83,6 @@ urllib3==2.5.0
 uvicorn==0.34.3
 websockets==15.0.1
 zipp==3.23.0
+db-dtypes>=1.2.0
+pyarrow>=15.0.0
+
