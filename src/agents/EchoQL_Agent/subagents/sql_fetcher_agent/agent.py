@@ -1,6 +1,6 @@
 """
-Agent 4 – BigQuery Fetcher  (print-only version)
-──────────────────────────────────────────────────────────────────────────────
+BigQuery Fetcher Agent
+
 • Expects in session.state
       sql_query         – cleaned & ready for BigQuery
       validation_status – must equal "valid"  (case-insensitive)

@@ -3,7 +3,7 @@ SQL Repair Agent
 ───────────────────────────────────────────────────────────────────────────────
 This agent is part of the Data Collection SequentialAgent pipeline.
 
-🧠 Purpose:
+Purpose:
 If the SQL Validator Agent returns an "invalid: ..." status, this agent:
 1. Regenerates the SQL query using the original user request, the invalid SQL, and the validator error.
 2. Stores the regenerated SQL back into session.state["sql_query"].

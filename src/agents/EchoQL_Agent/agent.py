@@ -1,5 +1,5 @@
 """
-Agent 1: Data Collection Agent
+Root Agent
 ───────────────────────────────────────────────────────────────────────────────
 • Checks data availability
 • Generates SQL
@@ -16,8 +16,6 @@ from .subagents.sql_fetcher_agent.agent import sql_fetcher_agent
 from .subagents.sql_repair_agent.agent import sql_repair_agent
 
 
-
-
 root_agent = SequentialAgent(
     name="EchoQL_Agent",
     description=(
@@ -25,10 +23,10 @@ root_agent = SequentialAgent(
         "executes the query, and returns a CSV to the user."
     ),
     sub_agents=[
-        data_availability_checker_agent,
-        sql_generator_agent,            # adds sql_query + user_request
-        sql_validator_agent,               # adds validation_status
-        sql_repair_agent,                # adds sql_query + user_request
-        sql_fetcher_agent,          # consumes above and attaches CSV
+        data_availability_checker_agent,    # check data availability
+        sql_generator_agent,                # adds sql_query + user_request
+        sql_validator_agent,                # adds validation_status
+        sql_repair_agent,                   # adds sql_query + user_request
+        sql_fetcher_agent,                  # consumes above and attaches CSV
     ],
 )

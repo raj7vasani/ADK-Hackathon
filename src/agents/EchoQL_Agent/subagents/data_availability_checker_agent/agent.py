@@ -1,3 +1,10 @@
+"""
+Data Availability Checker Agent
+
+This agent is responsible for checking whether a user's natural-language query can be answered using the available tables and fields in the database.
+"""
+
+
 from google.adk.agents import LlmAgent
 from pydantic import BaseModel
 from typing import List, Dict

@@ -19,8 +19,7 @@ for parent in current_path.parents:
         load_dotenv(env_file)
         break
 
-FAST_LLM_MODEL = os.getenv("FAST_LLM_MODEL")
-GEMINI_MODEL = "gemini-1.5-flash"
+GEMINI_MODEL = os.getenv("FAST_LLM_MODEL", "gemini-1.5-flash")
 
 sql_validator_agent = LlmAgent(
     name="SqlValidatorAgent",
