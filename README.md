@@ -42,16 +42,47 @@ ADK-Hackathon/
 │                   ├── agent.py        # Executes SQL, fetches data
 │                   └── bigquery_connector.py # BigQuery connection logic
 │
-├── deployment/
-│   └── deploy_agent.py                 # Deployment script for Vertex AI
 ├── configs/                            # Mock schema and data descriptions
 ├── Mock_Data/                          # Example CSVs for local testing
 ├── scripts/                            # Utility scripts
 ├── notebooks/                          # Data generation notebooks
 ├── pyproject.toml                      # Poetry project config
 ├── README.md                           # This file
-└── makefile                            # Build and automation commands
+└── makefile                            # Build and automation commands (Deployment)
 ```
+
+## 🗃️ Data Schema
+
+The project uses mock data to simulate a Q&A platform. The following tables are used for querying and analytics:
+
+### Table: mock_answers
+Contains user-submitted answers to questions on the QA platform. Each answer is linked to a question and a user, and has a timestamp and textual content.
+- **id**: Unique identifier for the answer (INT64)
+- **question_id**: Foreign key to the associated question (INT64)
+- **user_id**: Foreign key to the user who answered (INT64)
+- **created_at**: Timestamp when the answer was submitted (TIMESTAMP)
+- **content**: Text content of the user's answer (STRING)
+
+### Table: mock_questions
+Stores user-generated questions posted on the platform. Each question is associated with a user and includes a timestamp and content.
+- **question_id**: Unique identifier for the question (INT64)
+- **user_id**: ID of the user who posted the question (INT64)
+- **created_at**: When the question was posted (TIMESTAMP)
+- **content**: The text of the question (STRING)
+
+### Table: mock_users
+Contains user profiles for the QA platform. Each user has a unique ID, name, email, and birthday.
+- **id**: Unique identifier for the user (INT64)
+- **name**: User's full name (STRING)
+- **email**: User's email address (STRING)
+- **birthday**: User's date of birth (DATE)
+
+### Table: mock_user_sessions
+Tracks user session activity such as session duration and date. Useful for engagement analysis and retention metrics.
+- **session_id**: Unique identifier for a user session (STRING)
+- **user_id**: ID of the user who had the session (INT64)
+- **duration_min**: Length of the session in minutes (FLOAT64)
+- **session_date**: Date on which the session occurred (DATE)
 
 ---
 
