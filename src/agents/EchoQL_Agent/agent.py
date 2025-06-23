@@ -19,7 +19,7 @@ from .subagents.sql_repair_agent.agent import sql_repair_agent
 
 
 root_agent = SequentialAgent(
-    name="DataAnalysisAgent",
+    name="EchoQL_Agent",
     description=(
         "Checks data availability, generates SQL, validates it, "
         "executes the query, and returns a CSV to the user."

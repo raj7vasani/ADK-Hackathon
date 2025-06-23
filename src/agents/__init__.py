@@ -1,1 +1,1 @@
-from .data_analysis_agent.agent import root_agent
+from .EchoQL_Agent.agent import root_agent
